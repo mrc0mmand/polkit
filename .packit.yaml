@@ -19,3 +19,10 @@ jobs:
   trigger: pull_request
   targets:
   - fedora-all
+
+- job: tests
+  trigger: pull_request
+  fmf_path: test/integration/
+  targets:
+  # FIXME: use fedora-all-{x86_64,aarch64}
+  - fedora-rawhide-x86_64
