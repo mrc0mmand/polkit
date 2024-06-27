@@ -1,0 +1,5 @@
+summary: TBD
+test: ./test.sh
+require:
+  - expect
+  - sudo
