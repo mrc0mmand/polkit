@@ -149,19 +149,16 @@ ln -s "$BASH_ABS" ./my-bash
 sudo -u "$TEST_USER" expect "$TMP_DIR/basic-auth.exp" "$TEST_USER_PASSWORD" ./my-bash -c true | tee "$TMP_DIR/absolute-path.log"
 grep -Eq "Authentication is needed to run \`/.*/${PWD##*/}/./my-bash -c true' as the super user" "$TMP_DIR/absolute-path.log"
 grep -q "AUTHENTICATION COMPLETE" "$TMP_DIR/absolute-path.log"
-rm -f "$TMP_DIR/absolute-path.log"
-rm -f "./my-bash"
+rm -f "$TMP_DIR/absolute-path.log" "./my-bash"
 
 : "Check canonicalized path"
 if command -v strace; then
     BASH_ABS=$(command -v bash)
     ln -s "$BASH_ABS" ./my-bash
     sudo -u "$TEST_USER" strace -s 512 -o "$TMP_DIR/canonical-path.strace" -feexecve \
-	expect "$TMP_DIR/basic-auth.exp" "$TEST_USER_PASSWORD" ./my-bash -c true | tee "$TMP_DIR/canonical-path.log"
+        expect "$TMP_DIR/basic-auth.exp" "$TEST_USER_PASSWORD" ./my-bash -c true | tee "$TMP_DIR/canonical-path.log"
     cat "$TMP_DIR/canonical-path.strace"
     grep -qF "execve(\"$BASH_ABS\", [\"$PWD/./my-bash\"," "$TMP_DIR/canonical-path.strace"
     grep -q "AUTHENTICATION COMPLETE" "$TMP_DIR/canonical-path.log"
-    rm -f "$TMP_DIR/canonical-path.log" "$TMP_DIR/canonical-path.strace"
-    rm -f "./my-bash"
-    rm -f "$TMP_DIR/preload.c" "$TMP_DIR/preload.so"
+    rm -f "$TMP_DIR"/canonical-path.{log,strace} ./my-bash "$TMP_DIR"/preload.{c,so}
 fi
