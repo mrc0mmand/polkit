@@ -1,2 +1,4 @@
 require:
   - polkit
+check:
+  - how: avc
